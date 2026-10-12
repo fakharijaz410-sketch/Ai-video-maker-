@@ -1,126 +1,47 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Video Maker - Text & Image to 20 Min Video</title>
-<style>
-*{box-sizing:border-box}body{background:#0a0a0a;color:#fff;font-family:system-ui;padding:12px;text-align:center;margin:0}
-h1{font-size:22px;margin:10px 0}.tabs{display:flex;gap:8px;justify-content:center;margin:12px 0}
-.tab{padding:12px 22px;border-radius:25px;background:#1f1f1f;border:1px solid #333;cursor:pointer;font-weight:600}
-.tab.active{background:#7c3aed;border-color:#7c3aed}textarea,input[type=file],select{width:95%;max-width:600px;padding:14px;border-radius:12px;border:none;font-size:16px;margin-top:10px;background:#1a1a1a;color:#fff}
-button.main{width:95%;max-width:600px;margin-top:14px;padding:16px;background:linear-gradient(90deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:14px;font-size:20px;font-weight:bold}
-#log{color:#22c55e;margin:12px;font-size:16px;min-height:20px}video,canvas{width:95%;max-width:600px;border-radius:16px;margin-top:14px;background:#000}
-.panel{display:none}.panel.active{display:block}.small{color:#888;font-size:13px;margin-top:8px}
-</style></head><body>
-<h1>🎬 AI Video Maker Pro - 20 Min</h1>
-<div class="tabs"><div class="tab active" id="tb1" onclick="showTab(1)">Text to Video</div><div class="tab" id="tb2" onclick="showTab(2)">Image to Video</div></div>
 
-<div id="p1" class="panel active">
-<textarea id="txt" rows="3" placeholder="Text to Video: Yahan kahani likhein / Write story here. Example: A boy walking in futuristic city, rain, cinematic"></textarea>
-<select id="dur1"><option value="30">30 Sec Video</option><option value="60">1 Min Video</option><option value="300">5 Min Video</option><option value="600">10 Min Video</option><option value="1200" selected>20 Min Video (Full)</option></select>
-<button class="main" onclick="textToVideo()">🎥 Text Se Video Banao</button>
-<p class="small">Urdu + English dono mein likh sakte hain. 20 min video = 40 scenes auto banenge.</p>
-</div>
-
-<div id="p2" class="panel">
-<input type="file" id="imgIn" accept="image/*">
-<select id="dur2"><option value="30">30 Sec</option><option value="60" selected>1 Min</option><option value="300">5 Min</option><option value="1200">20 Min</option></select>
-<select id="anim"><option value="zoomIn">Zoom In</option><option value="zoomOut">Zoom Out</option><option value="pan">Pan Left to Right</option></select>
-<button class="main" onclick="imageToVideo()">🖼️ Image Se Video Banao</button>
-</div>
-
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fixed Player</title>
+<style>body{background:#000;color:#fff;text-align:center;font-family:sans-serif;padding:10px}textarea,select{width:95%;max-width:600px;padding:14px;border-radius:12px;background:#1e1e1e;color:#fff;border:none;margin-top:8px}button{width:95%;max-width:600px;padding:16px;background:#7c3aed;color:#fff;border:none;border-radius:14px;font-size:19px;margin-top:10px;font-weight:bold}video{width:95%;max-width:500px;border-radius:16px;margin-top:12px;background:#111}#log{color:#22c55e}</style></head><body>
+<h1>🎬 Video Player Fixed</h1>
+<textarea id="txt" rows="3" placeholder="Story likhein English mein"></textarea><br>
+<select id="dur"><option value="30">30 Sec Test</option><option value="60" selected>1 Min</option><option value="300">5 Min</option><option value="1200">20 Min</option></select><br>
+<button onclick="make()">Video Banao</button>
 <p id="log"></p>
-<video id="vid" controls playsinline></video>
+<video id="vid" controls playsinline preload="auto"></video><br>
+<a id="dl" download="video.webm" style="display:none"><button style="background:#22c55e">⬇️ Gallery Mein Save Karo / Download</button></a>
 <canvas id="can" width="720" height="1280" style="display:none"></canvas>
-<a id="dl" style="display:none" download="ai-video.webm"><button class="main" style="background:#22c55e">⬇️ Video Download Karo</button></a>
-
 <script>
-let currentTab=1;
-function showTab(n){currentTab=n;document.getElementById('p1').classList.toggle('active',n==1);document.getElementById('p2').classList.toggle('active',n==2);document.getElementById('tb1').classList.toggle('active',n==1);document.getElementById('tb2').classList.toggle('active',n==2);}
-
 const can=document.getElementById('can'),ctx=can.getContext('2d'),vid=document.getElementById('vid'),log=document.getElementById('log'),dl=document.getElementById('dl');
+async function make(){
+let prompt=document.getElementById('txt').value||"A brave wrestler";
+let totalSec=parseInt(document.getElementById('dur').value);
+let scenes=Math.ceil(totalSec/5);
+log.innerText="Ban rahi hai...";
 
-async function textToVideo(){
-let prompt=document.getElementById('txt').value.trim();
-if(!prompt)return alert('Pehle kahani likhein!');
-let totalSec=parseInt(document.getElementById('dur1').value);
-let scenes=Math.max(3,Math.floor(totalSec/30)); // 1 scene = 30 sec for 20 min video
-log.innerText=`⏳ ${scenes} scenes bana raha hun, total ${totalSec/60} min ke liye...`;
-let sentences=prompt.split(/[۔.!?]+/).filter(s=>s.trim().length>3);
-if(sentences.length==0)sentences=[prompt];
+let mime="video/webm"; 
+if(MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) mime="video/webm;codecs=vp8";
+else if(MediaRecorder.isTypeSupported("video/webm")) mime="video/webm";
 
-let images=[];
-for(let i=0;i<scenes;i++){
-let part=sentences[i%sentences.length];
-let finalPrompt=encodeURIComponent(part+" cinematic, ultra realistic, 8k, movie frame, vertical video");
-let url=`https://image.pollinations.ai/prompt/${finalPrompt}?width=720&height=1280&nologo=true&seed=${Date.now()+i*123}`;
-let img=new Image();img.crossOrigin='anonymous';
-await new Promise(res=>{img.onload=res;img.onerror=res;img.src=url;});
-images.push({img,text:part.slice(0,80)});
-log.innerText=`Image ${i+1}/${scenes} ready...`;
-}
-await renderVideo(images,totalSec);
-}
-
-async function imageToVideo(){
-let file=document.getElementById('imgIn').files[0];
-if(!file)return alert('Pehle image select karein!');
-let totalSec=parseInt(document.getElementById('dur2').value);
-let anim=document.getElementById('anim').value;
-let img=new Image();
-img.src=URL.createObjectURL(file);
-await new Promise(r=>{img.onload=r});
-await renderVideo([{img,text:'',anim:anim}],totalSec,true);
-}
-
-async function renderVideo(list,totalSec,isSingle=false){
-log.innerText='🎬 Video recording start ho rahi hai... Browser ko band mat karein';
 let stream=can.captureStream(30);
-let rec=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9'});
-let chunks=[];
-rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
+let rec=new MediaRecorder(stream,{mimeType:mime});
+let chunks=[];rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
 rec.onstop=()=>{
-let blob=new Blob(chunks,{type:'video/webm'});
+let blob=new Blob(chunks,{type:mime});
 let url=URL.createObjectURL(blob);
-vid.src=url;dl.href=url;dl.style.display='block';
-log.innerText=`✅ ${totalSec/60} Minute ki Video Ready! Neeche download karein`;
+vid.src=url;vid.load();
+dl.href=url;dl.style.display="inline-block";
+log.innerText="✅ Ready! Agar upar na chale to Download par click karke Gallery mein chalao";
 };
 rec.start(100);
-let sceneDuration=isSingle?totalSec:(totalSec/list.length);
-let fps=30,totalFrames=totalSec*fps,frame=0,sceneIdx=0;
-
-return new Promise(resolve=>{
-let interval=setInterval(()=>{
-if(frame>=totalFrames){clearInterval(interval);rec.stop();resolve();return;}
-let currentScene=Math.floor(frame/(sceneDuration*fps));
-if(currentScene>=list.length)currentScene=list.length-1;
-let item=list[currentScene];
-let progressInScene=(frame%(sceneDuration*fps))/(sceneDuration*fps);
-
-ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);
-if(item.img && item.img.width){
-let scale=1+progressInScene*0.3;
-if(item.anim=='zoomOut')scale=1.3-progressInScene*0.3;
-if(item.anim=='pan'){ctx.save();ctx.translate(-progressInScene*100,0);}
-let w=item.img.width,h=item.img.height;
-let ratio=Math.max(720/w,1280/h)*scale;
-let nw=w*ratio,nh=h*ratio;
-ctx.drawImage(item.img,(720-nw)/2,(1280-nh)/2,nw,nh);
-if(item.anim=='pan')ctx.restore();
+for(let i=0;i<scenes;i++){
+let grad=ctx.createLinearGradient(0,0,0,1280);grad.addColorStop(0,["#7c3aed","#059669","#2563eb","#db2777"][i%4]);grad.addColorStop(1,"#000");
+ctx.fillStyle=grad;ctx.fillRect(0,0,720,1280);
+ctx.fillStyle="rgba(0,0,0,0.5)";ctx.fillRect(0,1000,720,280);
+ctx.fillStyle="#fff";ctx.font="bold 28px sans-serif";ctx.textAlign="center";
+ctx.fillText(prompt.slice(i*30,(i+1)*30),360,1080);
+ctx.font="20px sans-serif";ctx.fillText(`Scene ${i+1}/${scenes} - ${mime}`,360,1120);
+log.innerText=`Recording ${i+1}/${scenes}...`;
+await new Promise(r=>setTimeout(r,5000));
 }
-// text overlay
-ctx.fillStyle='rgba(0,0,0,0.55)';ctx.fillRect(0,1050,720,230);
-ctx.fillStyle='#fff';ctx.font='bold 24px sans-serif';ctx.textAlign='center';
-wrapText(item.text||'',360,1100,640,28);
-
-sceneIdx=currentScene;
-frame++;
-if(frame%30==0)log.innerText=`Recording... ${Math.floor(frame/fps)}/${totalSec} sec`;
-},1000/fps);
-});
-}
-
-function wrapText(text,x,y,maxWidth,lineHeight){
-let words=text.split(' '),line='',lines=[];
-for(let n=0;n<words.length;n++){let testLine=line+words[n]+' ';let metrics=ctx.measureText(testLine);if(metrics.width>maxWidth&&n>0){lines.push(line);line=words[n]+' ';}else{line=testLine;}}lines.push(line);
-for(let i=0;i<lines.length;i++){ctx.fillText(lines[i],x,y+i*lineHeight);}
+rec.stop();
 }
 </script></body></html>
