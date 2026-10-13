@@ -1,16 +1,141 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Video Maker Recording Start...`;
-let stream=can.captureStream(30);let rec=new MediaRecorder(stream,{mimeType:"video/webm;codecs=vp8"});let chunks=[];rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
-rec.onstop=()=>{let b=new Blob(chunks,{type:"video/webm"});let u=URL.createObjectURL(b);vid.src=u;vid.play();dl.href=u;dl.style.display="block";log.innerText=`✅ ${totalSec/60} Min Ready! Format: ${curFmt[1]}`;};
-rec.start(200);let start=Date.now();
-(function draw(){
-let elapsed=(Date.now()-start)/1000;if(elapsed>=totalSec){rec.stop();return;}
-let idx=Math.floor((elapsed/(totalSec/imgs.length))%imgs.length);let p=(elapsed%(totalSec/imgs.length))/(totalSec/imgs.length);
-let img=imgs[idx];ctx.fillRect(0,0,cW,cH);
-if(img){let zoom=1+ p*0.5;let ratio=Math.max(cW/img.width,cH/img.height)*zoom;let nw=img.width*ratio,nh=img.height*ratio;let ox=(cW-nw)/2+Math.sin(elapsed*0.5)*30,oy=(cH-nh)/2;ctx.drawImage(img,ox,oy,nw,nh);}
-ctx.fillStyle="rgba(0,0,0,0.6)";ctx.fillRect(0,cH-120,cW,120);ctx.fillStyle="#fff";ctx.textAlign="center";ctx.font=`bold ${Math.floor(cW*0.04)}px sans-serif`;
-let label=labels?labels[idx]:`Scene ${idx+1}`;ctx.fillText(label,cW/2,cH-50);
-requestAnimationFrame(draw);
-})();
-}
-</script></body></html>
+
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free AI Video Maker</title>
+  <meta name="description" content="Create AI video ideas for TikTok, YouTube Shorts and social media.">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1020;
+      color: white;
+    }
+    header {
+      padding: 20px;
+      text-align: center;
+      background: #121a30;
+      border-bottom: 1px solid #293653;
+    }
+    header h1 { margin: 0; color: #72e6c1; }
+    header p { color: #bdc8df; }
+    main {
+      max-width: 720px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+    .panel {
+      background: #151e34;
+      border: 1px solid #2c3a58;
+      border-radius: 18px;
+      padding: 22px;
+    }
+    label {
+      display: block;
+      margin: 17px 0 8px;
+      font-weight: bold;
+    }
+    textarea, select, input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #354665;
+      border-radius: 10px;
+      background: #0c1427;
+      color: white;
+      font-size: 16px;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      border: 0;
+      border-radius: 10px;
+      background: #72e6c1;
+      color: #08131b;
+      font-weight: bold;
+      font-size: 17px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #0c1427;
+      border-radius: 10px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+    .note { color: #bdc8df; font-size: 14px; }
+    footer { text-align: center; padding: 25px; color: #bdc8df; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AI Video Maker</h1>
+    <p>Turn your ideas into amazing video concepts</p>
+  </header>
+
+  <main>
+    <div class="panel">
+      <h2>Create Your Video</h2>
+      <p class="note">Write your idea and choose your video settings.</p>
+
+      <label for="mode">Video type</label>
+      <select id="mode">
+        <option>Text to Video</option>
+        <option>Image to Video</option>
+      </select>
+
+      <label for="prompt">Describe your video</label>
+      <textarea id="prompt" placeholder="Example: A fast cricket bowler delivering a ball in a packed stadium, cinematic lighting..."></textarea>
+
+      <label for="format">Video format</label>
+      <select id="format">
+        <option value="9:16">9:16 - TikTok / Shorts / Reels</option>
+        <option value="16:9">16:9 - YouTube</option>
+        <option value="1:1">1:1 - Square</option>
+      </select>
+
+      <label for="duration">Video duration</label>
+      <select id="duration">
+        <option value="5">5 seconds</option>
+        <option value="10">10 seconds</option>
+      </select>
+
+      <button onclick="createVideo()">Create AI Video</button>
+
+      <div id="result" aria-live="polite">
+        Your video status will appear here.
+      </div>
+    </div>
+  </main>
+
+  <footer>AI Video Maker | Demo Website</footer>
+
+  <script>
+    function createVideo() {
+      const prompt = document.getElementById("prompt").value.trim();
+      const mode = document.getElementById("mode").value;
+      const format = document.getElementById("format").value;
+      const duration = document.getElementById("duration").value;
+      const result = document.getElementById("result");
+
+      if (!prompt) {
+        result.textContent = "Please describe your video idea first.";
+        return;
+      }
+
+      result.textContent =
+        "Your request has been prepared, but real AI video generation is not connected yet. " +
+        "Type: " + mode +
+        " | Format: " + format +
+        " | Duration: " + duration + " seconds." +
+        " | Prompt: " + prompt +
+        " Connect a video-generation API through a secure backend to generate and download a real video.";
+    }
+  </script>
+</body>
+</html>
