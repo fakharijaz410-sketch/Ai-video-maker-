@@ -1,141 +1,54 @@
-
-<!DOCTYPE html>
-<html lang="ur">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free AI Video Maker</title>
-  <meta name="description" content="Create AI video ideas for TikTok, YouTube Shorts and social media.">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b1020;
-      color: white;
-    }
-    header {
-      padding: 20px;
-      text-align: center;
-      background: #121a30;
-      border-bottom: 1px solid #293653;
-    }
-    header h1 { margin: 0; color: #72e6c1; }
-    header p { color: #bdc8df; }
-    main {
-      max-width: 720px;
-      margin: 30px auto;
-      padding: 20px;
-    }
-    .panel {
-      background: #151e34;
-      border: 1px solid #2c3a58;
-      border-radius: 18px;
-      padding: 22px;
-    }
-    label {
-      display: block;
-      margin: 17px 0 8px;
-      font-weight: bold;
-    }
-    textarea, select, input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #354665;
-      border-radius: 10px;
-      background: #0c1427;
-      color: white;
-      font-size: 16px;
-    }
-    textarea { min-height: 120px; resize: vertical; }
-    button {
-      width: 100%;
-      margin-top: 20px;
-      padding: 15px;
-      border: 0;
-      border-radius: 10px;
-      background: #72e6c1;
-      color: #08131b;
-      font-weight: bold;
-      font-size: 17px;
-      cursor: pointer;
-    }
-    #result {
-      margin-top: 20px;
-      padding: 15px;
-      background: #0c1427;
-      border-radius: 10px;
-      line-height: 1.7;
-      overflow-wrap: anywhere;
-    }
-    .note { color: #bdc8df; font-size: 14px; }
-    footer { text-align: center; padding: 25px; color: #bdc8df; }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>AI Video Maker</h1>
-    <p>Turn your ideas into amazing video concepts</p>
-  </header>
-
-  <main>
-    <div class="panel">
-      <h2>Create Your Video</h2>
-      <p class="note">Write your idea and choose your video settings.</p>
-
-      <label for="mode">Video type</label>
-      <select id="mode">
-        <option>Text to Video</option>
-        <option>Image to Video</option>
-      </select>
-
-      <label for="prompt">Describe your video</label>
-      <textarea id="prompt" placeholder="Example: A fast cricket bowler delivering a ball in a packed stadium, cinematic lighting..."></textarea>
-
-      <label for="format">Video format</label>
-      <select id="format">
-        <option value="9:16">9:16 - TikTok / Shorts / Reels</option>
-        <option value="16:9">16:9 - YouTube</option>
-        <option value="1:1">1:1 - Square</option>
-      </select>
-
-      <label for="duration">Video duration</label>
-      <select id="duration">
-        <option value="5">5 seconds</option>
-        <option value="10">10 seconds</option>
-      </select>
-
-      <button onclick="createVideo()">Create AI Video</button>
-
-      <div id="result" aria-live="polite">
-        Your video status will appear here.
-      </div>
-    </div>
-  </main>
-
-  <footer>AI Video Maker | Demo Website</footer>
-
-  <script>
-    function createVideo() {
-      const prompt = document.getElementById("prompt").value.trim();
-      const mode = document.getElementById("mode").value;
-      const format = document.getElementById("format").value;
-      const duration = document.getElementById("duration").value;
-      const result = document.getElementById("result");
-
-      if (!prompt) {
-        result.textContent = "Please describe your video idea first.";
-        return;
-      }
-
-      result.textContent =
-        "Your request has been prepared, but real AI video generation is not connected yet. " +
-        "Type: " + mode +
-        " | Format: " + format +
-        " | Duration: " + duration + " seconds." +
-        " | Prompt: " + prompt +
-        " Connect a video-generation API through a secure backend to generate and download a real video.";
-    }
-  </script>
-</body>
-</html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Video Moving Fix</title>
+<style>body{background:#000;color:#fff;text-align:center;font-family:system-ui;padding:10px}textarea{width:95%;max-width:600px;padding:14px;border-radius:12px;background:#1e1e1e;color:#fff;border:none}select{padding:12px;border-radius:12px;background:#1e1e1e;color:#fff;border:1px solid #333;margin:5px}button{width:95%;max-width:600px;padding:16px;background:#7c3aed;color:#fff;border:none;border-radius:14px;font-size:18px;font-weight:bold;margin-top:10px}video{width:95%;max-width:600px;border-radius:16px;background:#111;border:2px solid #333;min-height:500px}#log{color:#22c55e;margin:10px;font-weight:bold}</style></head><body>
+<h1>🎬 Tez Moving Video</h1>
+<textarea id="txt" rows="3" placeholder="English mein likhein: jungle at night, scary house"></textarea><br>
+<select id="dur"><option value="60" selected>1 Min</option><option value="300">5 Min</option><option value="1740">29 Min</option></select>
+<select id="fmt"><option value="tk" selected>TikTok 9:16</option><option value="yt">YouTube 16:9</option><option value="fb">Facebook 1:1</option></select><br>
+<button onclick="make()">▶️ Moving Video Banao</button>
+<p id="log">Ready</p>
+<video id="vid" controls playsinline autoplay muted loop style="background:#000"></video><br>
+<a id="dl" style="display:none" download="moving-video.webm"><button style="background:#22c55e">⬇️ Download Moving Video</button></a>
+<canvas id="can" width="720" height="1280" style="display:none"></canvas>
+<script>
+const can=document.getElementById('can'),ctx=can.getContext('2d'),vid=document.getElementById('vid'),log=document.getElementById('log'),dl=document.getElementById('dl');
+function setFmt(f){if(f=='yt'){can.width=1280;can.height=720;}else if(f=='fb'){can.width=1080;can.height=1080;}else{can.width=720;can.height=1280;}}
+async function fetchImg(p,w,h){
+try{let url=`https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?width=${w}&height=${h}&nologo=true&seed=${Math.floor(Math.random()*99999)}`;
+let b=await fetch(url).then(r=>r.blob());let u=URL.createObjectURL(b);let im=new Image();await new Promise(res=>{im.onload=res;im.onerror=res;im.src=u;});return im.naturalWidth?im:null;}catch(e){return null;}}
+async function make(){
+let raw=document.getElementById('txt').value.trim()||"dark scary jungle at night";
+let totalSec=parseInt(document.getElementById('dur').value);
+let fmt=document.getElementById('fmt').value;setFmt(fmt);
+log.innerText="AI Image bana raha hun...";
+let imgs=[];
+for(let i=0;i<4;i++){let im=await fetchImg(raw+` cinematic scene ${i+1} ultra realistic 8k`,can.width,can.height);if(im)imgs.push(im);log.innerText=`Image ${i+1}/4 ready`;}
+if(imgs.length==0)return log.innerText="Image nahi bani, net check karein";
+let stream=can.captureStream(30);let mime="video/webm";if(MediaRecorder.isTypeSupported("video/webm;codecs=vp8"))mime="video/webm;codecs=vp8";
+let rec=new MediaRecorder(stream,{mimeType:mime});let chunks=[];rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
+rec.onstop=()=>{let blob=new Blob(chunks,{type:mime});let url=URL.createObjectURL(blob);vid.src=url;vid.muted=false;vid.play();dl.href=url;dl.style.display="block";log.innerText=`✅ ${totalSec/60} Min MOVING Video Ready! Ab video hil rahi hai, pic nahi!`;};
+rec.start(200);
+let start=Date.now();
+(function draw(){
+let elapsed=(Date.now()-start)/1000;if(elapsed>=totalSec){rec.stop();return;}
+let idx=Math.floor((elapsed/5)%imgs.length); // har 5 sec image change
+let p=(elapsed%5)/5; // 0 to 1 har 5 sec
+let img=imgs[idx];
+ctx.fillStyle="#000";ctx.fillRect(0,0,can.width,can.height);
+if(img){
+let zoom=1.2 + p*1.0; // tez zoom 1.2 se 2.2 tak
+let w=img.width,h=img.height;let ratio=Math.max(can.width/w,can.height/h)*zoom;
+let nw=w*ratio,nh=h*ratio;
+let ox=(can.width-nw)/2 + Math.sin(elapsed*0.8)*200; // tez left-right hilna
+let oy=(can.height-nh)/2 + Math.cos(elapsed*0.6)*150; // tez up-down hilna
+ctx.drawImage(img,ox,oy,nw,nh);
+}
+ctx.fillStyle="rgba(0,0,0,0.6)";ctx.fillRect(0,can.height-180,can.width,180);
+ctx.fillStyle="#fff";ctx.textAlign="center";ctx.font=`bold ${Math.floor(can.width*0.05)}px sans-serif`;
+ctx.fillText(`Scene ${idx+1} - MOVING`,can.width/2,can.height-100);
+ctx.font=`${Math.floor(can.width*0.04)}px sans-serif`;ctx.fillText(`${Math.floor(elapsed)}s / ${totalSec}s - Video is Moving!`,can.width/2,can.height-50);
+log.innerText=`🔴 Recording... ${Math.floor(elapsed)}s - Video tez hil rahi hai, pic nahi hai!`;
+requestAnimationFrame(draw);
+})();
+}
+</script></body></html>
